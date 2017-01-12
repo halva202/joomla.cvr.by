@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5.0" method="install">
+	<name>mod_news</name>
+	<author>Andrew</author>
+	<creationDate>18.03.2013</creationDate>
+	<copyright>Copyright (C) 2013 All rights reserved.</copyright>
+	<license>GNU General Public License</license>
+	<authorEmail>admin@myemail.ru</authorEmail>
+	<authorUrl>poleshuk.ru</authorUrl>
+	<version>2.5.0</version>
+	<description>MOD_NEWS_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_news">mod_news.php</filename>
+		<folder>tmpl</folder>
+		<filename>index.html</filename>		
+		<filename>mod_news.xml</filename>
+                <filename>helper.php</filename>
+	</files>
+</extension>
