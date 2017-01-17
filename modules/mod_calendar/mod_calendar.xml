@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5.0" method="install">
+	<name>mod_calendar</name>
+	<author>halva202</author>
+	<creationDate>12.01.2017</creationDate>
+	<license>GNU General Public License</license>
+	<authorEmail>halva202@gmail.com</authorEmail>
+	<authorUrl>halva202.by</authorUrl>
+	<version>2.5.0</version>
+	<description>MOD_CALENDAR_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_calendar">mod_calendar.php</filename>
+		<filename>index.html</filename>		
+		<filename>mod_calendar.xml</filename>
+	</files>
+</extension>
