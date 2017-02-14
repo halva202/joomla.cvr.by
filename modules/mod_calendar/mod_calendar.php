@@ -1,49 +1,59 @@
 <?php
 defined('_JEXEC') or die;
 
-include("/selfCode/library/calendar/func.php");
+include($_SERVER['DOCUMENT_ROOT']."/selfCode/library/calendar/func.php");
+
 $yearSelected=date("Y");
 $monthSelected=date("m");
-$daySelected=date("d");
-// var_dump(result($yearSelected,$monthSelected,$daySelected)); 
-$info = result($yearSelected,$monthSelected,$daySelected);
+$daySelected=date("d"); 
 ?>
 
+<h1> Православный календарь </h1>
+<input type="date" id="calendar" value="<?= $yearSelected ?>-<?= $monthSelected ?>-<?= $daySelected ?>"  autofocus/><br>
 
-<input type="date" id="calendar" value="" autofocus/><br>
-<!-- <div id="div_insert"></div> -->
 
-<p>Ближайший праздник: </p>
 <div id="nearestHoliday">
-	<p>Дата - <?= $info['date'] ?> </p>
-	<p>Название праздника - <?= $info['title'] ?> </p>
-	<p>Introduction - <?= $info['introduction'] ?> </p>
-	<p>Описание - <?= $info['text'] ?> </p>
+	<?php include($_SERVER['DOCUMENT_ROOT']."/selfCode/library/calendar/calendar_forInsert.php"); ?>
 </div>
 
 <script>
+
+// для отображения текущей даты в календаре
 var d = new Date();
 var curr_day = d.getDate();
+	if(curr_day < 10){curr_day = "0" + curr_day;}
 var curr_month = d.getMonth() + 1;
 	if(curr_month < 10){curr_month = "0" + curr_month;}
 var curr_year = d.getFullYear();
-
 var res = curr_year + "-" + curr_month + "-" + curr_day;
 document.getElementById('calendar').value = res;
+// /для отображения текущей даты в календаре
 
-function knowDate(){
+
+function prevDate(){
+	// var res = '2017-04-03';
+	// var res = document.getElementById('prevDate').innerHTML;
+	var res = jQuery("#prevDate_hidden").val();
+	arr = res.split('.');
+	console.log(arr);
+	document.getElementById('calendar').value = arr[2] + "-" + arr[1] + "-" + arr[0];
+	nearestHoliday();
+}
+
+function nextDate(){
+	// var res = document.getElementById('nextDate').innerHTML;
+	var res = jQuery("#nextDate_hidden").val();
+	arr = res.split('.');
+	document.getElementById('calendar').value = arr[2] + "-" + arr[1] + "-" + arr[0];
+	nearestHoliday();
+}
+
+function nearestHoliday(){
 	dateValue = document.getElementById("calendar").value;
-	// arr = dateValue.split('-');
-		// year = arr[0];
-		// month = arr[1];
-		// day = arr[2];
-	// document.getElementById("div_insert").innerHTML = 'Выбрана дата: ' + dateValue;
 	
 	jQuery.ajax({
         type: "POST",
-        url: "/selfCode/calendar.php",
-        //data: "sid=<?=session_id()?>&data_1="+$('#data_1').val()+"&data_2="+$('#data_2').val(),
-		// data: "year=" + year + "&month=" + month,
+        url: "/selfCode/library/calendar/calendar_jquery.php",
 		data: "dateSelected=" + dateValue,
         success: function(response){
             jQuery('#nearestHoliday').html(response);
@@ -51,7 +61,7 @@ function knowDate(){
     });
 
 }
-document.getElementById("calendar").addEventListener("change", knowDate);
+
+document.getElementById("calendar").addEventListener("change", nearestHoliday);
+
 </script>
-
-
