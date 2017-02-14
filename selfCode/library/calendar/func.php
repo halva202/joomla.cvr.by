@@ -158,6 +158,7 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 				'kind' => $nearestHoliday_minInfo['kind'],
 				'mktime' => $nearestHoliday_minInfo['mktime'],
 				'date' => date("d-m-Y", $nearestHoliday_minInfo['mktime']),
+				'date2' => date("d.m.Y", $nearestHoliday_minInfo['mktime']),
 				'datetime' => date("d-m-Y H:i:s", $nearestHoliday_minInfo['mktime']),
 				'dateformat1' => dateformat1($nearestHoliday_minInfo['mktime']),
 				'dateformat2' => dateformat2($nearestHoliday_minInfo['mktime']),
@@ -278,6 +279,21 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 function nearestHolidays($yearSelected,$monthSelected,$daySelected){
 	// $prevHoliday = prevHoliday();
 	$nearest = nearestHoliday($yearSelected,$monthSelected,$daySelected);
+	// for next1
+	$mktimeNext1 = $nearest['mktime'] + 24 * 3600;
+		$mktime = $mktimeNext1;
+		$dayOfMonth = date("j", $mktime);
+		$month = date("n", $mktime);
+		$year = date("Y", $mktime);
+	$next1 = nearestHoliday($year,$month,$dayOfMonth);
+	// for next2
+	$mktimeNext2 = $next1['mktime'] + 24 * 3600;
+		$mktime = $mktimeNext2;
+		$dayOfMonth = date("j", $mktime);
+		$month = date("n", $mktime);
+		$year = date("Y", $mktime);
+	$next2 = nearestHoliday($year,$month,$dayOfMonth);
+	
 	$nearestHolidays = [
 		// 'prevHoliday' => $prevHoliday,
 		// 'prevHolidays' => $prevHolidays,
@@ -285,8 +301,8 @@ function nearestHolidays($yearSelected,$monthSelected,$daySelected){
 		'prev2' => $nearest,
 		'prev1' => $nearest,
 		'nearest' => $nearest,
-		'next1' => $nearest,
-		'next2' => $nearest,
+		'next1' => $next1,
+		'next2' => $next2,
 	];
 	
 	return $nearestHolidays;
