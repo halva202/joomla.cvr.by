@@ -19,16 +19,6 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 	
 	$nearestHoliday = holiday_info($nearestHoliday_minInfo);
 	
-	
-	$yesterday = yesterday($yearSelected,$monthSelected,$daySelected);
-		$yesterday2 = yesterday2($yearSelected,$monthSelected,$daySelected);
-	$tomorrow = tomorrow($yearSelected,$monthSelected,$daySelected);
-		$tomorrow2 = tomorrow2($yearSelected,$monthSelected,$daySelected);
-	array_push($nearestHoliday, $yesterday);
-	array_push($nearestHoliday, $tomorrow);
-	array_push($nearestHoliday, $yesterday2);
-	array_push($nearestHoliday, $tomorrow2);
-	
 	return $nearestHoliday;
 }
 
@@ -47,8 +37,8 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 			while($row = mysql_fetch_array($select)){
 				$count = $count + 1;
 				$difference_holiday_Easter = $row['difference'];
-				// $id = $row['id'];
-				$id = 999;
+				$id = $row['id'];
+				// $id = 999;
 				$title = $row['title'];
 				$introduction = $row['introduction'];
 				$text = $row['text'];
@@ -277,8 +267,23 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 
 
 function nearestHolidays($yearSelected,$monthSelected,$daySelected){
-	// $prevHoliday = prevHoliday();
 	$nearest = nearestHoliday($yearSelected,$monthSelected,$daySelected);
+	
+	// for prev1
+	$mktimePrev1 = $nearest['mktime'] - 24 * 3600;
+		$mktime = $mktimePrev1;
+		$dayOfMonth = date("j", $mktime);
+		$month = date("n", $mktime);
+		$year = date("Y", $mktime);
+	$prev1 = nearestHolidayLast($year,$month,$dayOfMonth);
+	// for prev2
+	$mktimePrev2 = $prev1['mktime'] - 24 * 3600;
+		$mktime = $mktimePrev2;
+		$dayOfMonth = date("j", $mktime);
+		$month = date("n", $mktime);
+		$year = date("Y", $mktime);
+	$prev2 = nearestHolidayLast($year,$month,$dayOfMonth);
+	
 	// for next1
 	$mktimeNext1 = $nearest['mktime'] + 24 * 3600;
 		$mktime = $mktimeNext1;
@@ -295,11 +300,8 @@ function nearestHolidays($yearSelected,$monthSelected,$daySelected){
 	$next2 = nearestHoliday($year,$month,$dayOfMonth);
 	
 	$nearestHolidays = [
-		// 'prevHoliday' => $prevHoliday,
-		// 'prevHolidays' => $prevHolidays,
-		// 'nextHolidays' => $nextHolidays,
-		'prev2' => $nearest,
-		'prev1' => $nearest,
+		'prev2' => $prev2,
+		'prev1' => $prev1,
 		'nearest' => $nearest,
 		'next1' => $next1,
 		'next2' => $next2,
@@ -308,61 +310,104 @@ function nearestHolidays($yearSelected,$monthSelected,$daySelected){
 	return $nearestHolidays;
 }
 
-// function prevHoliday($mktimeNearest){
-	// $prevHoliday = 'wait';
-	// $mktimeNearest = $mktimeNearest - 24*3600;
-	// while($prevHoliday == 'wait'){
+function nearestHolidayLast($yearSelected,$monthSelected,$daySelected){
+	$nearest_holiday_dynamic = nearest_holiday_dynamicLast($yearSelected,$monthSelected,$daySelected);
+	$nearest_holiday_static = nearest_holiday_staticLast($yearSelected,$monthSelected,$daySelected);
+	$nearest_holiday_dynamic['mktime'] >= $nearest_holiday_static['mktime'] ? $nearestHoliday_minInfo = $nearest_holiday_dynamic : $nearestHoliday_minInfo = $nearest_holiday_static;
+	
+	$nearestHoliday = holiday_info($nearestHoliday_minInfo);
+	
+	return $nearestHoliday;
+}
+	function nearest_holiday_dynamicLast($yearSelected,$monthSelected,$daySelected){
+		$count = 0;
+		$year = $yearSelected;
+		$month = $monthSelected;
+		$day = $daySelected;
+		while($count == 0){
+			$Easter = Easter($year);
+			$dayOfYear_Easter = $Easter['dayOfYear'];
+			$dayOfYear_daySelected = date("z", mktime(0, 0, 0, $month, $day, $year));
+			$difference_Easter_daySelected = $dayOfYear_daySelected - $dayOfYear_Easter;
+			$select = select($table = 'calendar_dynamic', $conditions = 'difference <= '.$difference_Easter_daySelected.' ORDER BY difference DESC LIMIT 1');
+			
+			while($row = mysql_fetch_array($select)){
+				$count = $count + 1;
+				$difference_holiday_Easter = $row['difference'];
+				$id = $row['id'];
+				// $id = 999;
+				$title = $row['title'];
+				$introduction = $row['introduction'];
+				$text = $row['text'];
+				// $dayOfYear_holiday = $dayOfYear_Easter + $difference_holiday_Easter;
+			}
+			
+			$year = $year - 1;
+			$month = 12;
+			$day = 31;
+		}
 		
-	// }
-	
-// }
-
-
-
+		$mktime = $Easter['mktime']+$difference_holiday_Easter*24*60*60;
 		
-function yesterday($yearSelected,$monthSelected,$daySelected){
-	$dayOfYear_selected = date("z", mktime(0, 0, 0, $monthSelected, $daySelected, $yearSelected));
-	$yesterday = date('d.m.Y', strtotime( date("$yearSelected-$monthSelected-$daySelected") . "- 1 day" ));
-	return $yesterday;
-}
-
-function tomorrow($yearSelected,$monthSelected,$daySelected){
-	$dayOfYear_selected = date("z", mktime(0, 0, 0, $monthSelected, $daySelected, $yearSelected));
-	$tomorrow = date('d.m.Y', strtotime( date("$yearSelected-$monthSelected-$daySelected") . "+ 1 day" ));
-	return $tomorrow;
-}
-
-
-
-
-
-
-// Формат: 27 ноября
-function yesterday2($yearSelected,$monthSelected,$daySelected){
-	$mktime = mktime(0, 0, 0, $monthSelected, $daySelected, $yearSelected)-24*3600;
-	// $dayOfYear_selected = date("z", mktime(0, 0, 0, $monthSelected, $daySelected, $yearSelected));
-	$phrasebook = phrasebook($mktime);
-	$dayOfMonth = $phrasebook['dayOfMonth'];
-	$month_text = $phrasebook['month_text'];
+		$nearest_holiday_dynamic = [
+			'id' => $id,
+			'kind' => 'dynamic',
+			'mktime' => $mktime,
+			'title' => $title,
+			'introduction' => $introduction,
+			'text' => $text,
+		];
+		
+		return $nearest_holiday_dynamic;
+	}
+	function nearest_holiday_staticLast($yearSelected,$monthSelected,$daySelected){
+		$count = 0;
+		$year = $yearSelected;
+		$month = $monthSelected;
+		$day = $daySelected;
+		
+		$select = select($table = 'calendar_static', $conditions = 'month='.$month.' AND day<='.$day.' ORDER BY day DESC LIMIT 1');
+		while($row = mysql_fetch_array($select)){
+			$count = $count + 1;
+			$id = $row['id'];
+			$month = $row['month'];
+			$day = $row['day'];
+			$title = $row['title'];
+			$introduction = $row['introduction'];
+			$text = $row['text'];
+		}
+		
+		while($count == 0){
+			$month = $month - 1;
+			if($month == 0){
+				$month = 12;
+				$year = $year - 1;
+			}
+			$select = select($table = 'calendar_static', $conditions = 'month='.$month.' ORDER BY day DESC LIMIT 1' );
+			while($row = mysql_fetch_array($select)) {
+				$count = $count + 1;
+				$id = $row['id'];
+				$month = $row['month'];
+				$day = $row['day'];
+				$title = $row['title'];
+				$introduction = $row['introduction'];
+				$text = $row['text'];
+			}
+		}
+		
+		$mktime = mktime(0, 0, 0, $month, $day, $year);
+		$dayOfYear_holiday = date("z", $mktime);
+		
+		$nearest_holiday_static = [
+			'id' => $id,
+			'kind' => 'static',
+			'mktime' => $mktime,
+			'title' => $title,
+			'introduction' => $introduction,
+			'text' => $text,
+		];
+		
+		return $nearest_holiday_static;
+	}
 	
-	$dateformat = "$dayOfMonth $month_text";
-	return $dateformat;
-}
-
-// Формат: 29 ноября
-function tomorrow2($yearSelected,$monthSelected,$daySelected){
-	$mktime = mktime(0, 0, 0, $monthSelected, $daySelected, $yearSelected)+24*3600;
-	$phrasebook = phrasebook($mktime);
-	$dayOfMonth = $phrasebook['dayOfMonth'];
-	$month_text = $phrasebook['month_text'];
-	
-	$dateformat = "$dayOfMonth $month_text";
-	return $dateformat;
-}
-
-
-
-
-
-
 ?>
