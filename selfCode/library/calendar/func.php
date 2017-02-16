@@ -149,6 +149,9 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 				'mktime' => $nearestHoliday_minInfo['mktime'],
 				'date' => date("d-m-Y", $nearestHoliday_minInfo['mktime']),
 				'date2' => date("d.m.Y", $nearestHoliday_minInfo['mktime']),
+				'year' => date("Y", $nearestHoliday_minInfo['mktime']),
+				'month' => date("m", $nearestHoliday_minInfo['mktime']),
+				'day' => date("d", $nearestHoliday_minInfo['mktime']),
 				'datetime' => date("d-m-Y H:i:s", $nearestHoliday_minInfo['mktime']),
 				'dateformat1' => dateformat1($nearestHoliday_minInfo['mktime']),
 				'dateformat2' => dateformat2($nearestHoliday_minInfo['mktime']),
@@ -260,7 +263,7 @@ function nearestHoliday($yearSelected,$monthSelected,$daySelected){
 				$dayOfMonth = $phrasebook['dayOfMonth'];
 				$month_text = $phrasebook['month_text'];
 				$year = $phrasebook['year'];
-				$dayOfWeek_text = mb_strtolower($phrasebook['dayOfWeek_text']);
+				$dayOfWeek_text = mb_strtolower($phrasebook['dayOfWeek_text'],'utf8');
 				$dateformat = "$dayOfMonth $month_text $year года, $dayOfWeek_text";
 				return $dateformat;
 			}	

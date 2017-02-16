@@ -32,16 +32,23 @@ $dateNextHidden = $nearestHolidays['next1']['date2'];
 
 <h3> Ближайшие праздники </h3> 
 
-<?php $nearest_holidays = $result['nearestHolidays'];$n=1; ?>
-
+<?php 
+$nearest_holidays = $result['nearestHolidays'];
+$n=1; 
+$u =&JFactory::getURI(); 
+?>
 
 <?php foreach($nearest_holidays as $nearest_holiday): ?>
 	<?php $n ==3 ? $color = 'red' : $color = 'black'; ?>
+	
 	<div>
 		<font color="brown"><?= $n ?></font>
-		<font color="<?= $color ?>"><?= $nearest_holiday['title'] ?></font> (<?= $nearest_holiday['dateformat3'] ?>)
+		<a href="<?= $u ?>?year=<?= $nearest_holiday['year']?>&month=<?= $nearest_holiday['month'] ?>&day=<?= $nearest_holiday['day'] ?>"><font color="<?= $color ?>"><?= $nearest_holiday['title'] ?></font></a> (<?= $nearest_holiday['dateformat3'] ?>)
 	</div>
+	
 	<div class="pictureDate_small"><img src="/media/k2/items/treatment/<?= $nearest_holiday['kind'] ?>/item_<?= $nearest_holiday['id'] ?>.jpg"></div>
-	<div><?= $nearest_holiday['text'] ?> </div>
+	
+	<div><?= substr($nearest_holiday['text'], 0, strrpos(substr($nearest_holiday['text'], 0,300), ' ')).' ...' ?> </div>
+	
 	<?php $n = $n + 1; ?>
 <?php endforeach; ?>

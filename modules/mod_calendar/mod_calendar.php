@@ -3,9 +3,16 @@ defined('_JEXEC') or die;
 
 include($_SERVER['DOCUMENT_ROOT']."/selfCode/library/calendar/func.php");
 
-$yearSelected=date("Y");
-$monthSelected=date("m");
-$daySelected=date("d"); 
+if(isset($_GET['year'])){
+	$yearSelected = $_GET['year'];
+	$monthSelected = $_GET['month'];
+	$daySelected = $_GET['day'];	
+}
+else{
+	$yearSelected = date("Y");
+	$monthSelected = date("m");
+	$daySelected = date("d"); 	
+}
 ?>
 
 <h1> Православный календарь </h1>
@@ -20,12 +27,17 @@ $daySelected=date("d");
 
 // для отображения текущей даты в календаре
 var d = new Date();
-var curr_day = d.getDate();
+// var curr_day = d.getDate();
+var curr_day = <?= $daySelected ?>;
 	if(curr_day < 10){curr_day = "0" + curr_day;}
-var curr_month = d.getMonth() + 1;
+// var curr_month = d.getMonth() + 1;
+var curr_month = <?= $monthSelected ?>;
 	if(curr_month < 10){curr_month = "0" + curr_month;}
-var curr_year = d.getFullYear();
+// var curr_year = d.getFullYear();
+var curr_year = <?= $yearSelected ?>;
 var res = curr_year + "-" + curr_month + "-" + curr_day;
+// var res = <?= $yearSelected ?> + "-" + <?= $monthSelected ?> + "-" + <?= $daySelected ?>;
+
 document.getElementById('calendar').value = res;
 // /для отображения текущей даты в календаре
 
